@@ -4,14 +4,14 @@ import threading
 from natsort import natsorted, ns
 
 result = []
-ziel = "127.0.0.1"
+dest = "127.0.0.1"
 
 """
 #langsam
 def portscan(port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _ = s.connect((ziel, port))
+        _ = s.connect((dest, port))
         return True
     except:
         return False
@@ -19,9 +19,9 @@ def portscan(port):
 
 for x in range(500):
     if (portscan(x)):
-        print(f"Port {x} ist offen!")
+        print(f"Port {x} is open!")
     else:
-        print(f"Port {x} ist geschlossen!")
+        print(f"Port {x} ist closed!")
 """
 
 q = Queue()
@@ -32,7 +32,7 @@ for x in range(500):
 def portscan(port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        _ = s.connect((ziel, port))
+        _ = s.connect((dest, port))
         return True
     except:
         return False
@@ -42,9 +42,9 @@ def worker():
     while q.empty() != True:
         port = q.get()
         if(portscan(port)):
-            result.append("Port {} ist offen!".format(port))
+            result.append("Port {} is open!".format(port))
         else:
-            result.append("Port {} ist geschlossen!".format(port))
+            result.append("Port {} ist closed!".format(port))
 
 
 # create 50 threads to scan the ports
@@ -52,8 +52,9 @@ for x in range(50):
     t = threading.Thread(target=worker)
     t.start()
 
-# warten bis die Threads fertig sind
+# wait til all threads are done
 t.join()
-# nach ports sortieren - sort muss manuell gemacht werden - SEARCH for HUMAN NATURAL SORT
+
+# Without this awesome natsort library, the ports wouldend be in order
 result = natsorted(result, alg=ns.IGNORECASE)
 print(result)
